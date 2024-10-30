@@ -1,15 +1,14 @@
-package main
+package pkg
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"math/rand"
 	"os"
 )
 
 // decryptImage giải mã hình ảnh, có thể từ một file đã giấu
-func decryptImage(inputPath, outputPath string, key []byte) error {
+func DecryptImage(inputPath, outputPath string, key []byte) error {
 	// Đọc file đầu vào
 	input, err := os.ReadFile(inputPath)
 	if err != nil {
@@ -27,11 +26,11 @@ func decryptImage(inputPath, outputPath string, key []byte) error {
 	encryptedData := input[stegIndex+8 : stegIndex+8+int(dataLength)]
 	
 	// Giải mã dữ liệu đã trích xuất
-	return decryptImageFromBytes(encryptedData, outputPath, key)
+	return DecryptImageFromBytes(encryptedData, outputPath, key)
 }
 
 // decryptImageFromBytes giải mã dữ liệu hình ảnh từ []byte
-func decryptImageFromBytes(data []byte, outputPath string, key []byte) error {
+func DecryptImageFromBytes(data []byte, outputPath string, key []byte) error {
 	// Tìm vị trí bắt đầu của chunk IDAT
 	idatStart := bytes.Index(data, []byte("IDAT"))
 	if idatStart == -1 {
@@ -58,9 +57,9 @@ func decryptImageFromBytes(data []byte, outputPath string, key []byte) error {
 }
 
 // encryptImage mã hóa hình ảnh và tùy chọn giấu nó vào một hình ảnh khác
-func encryptImage(inputPath, outputPath string, coverPath string, key []byte) error {
+func EncryptImage(inputPath, outputPath string, coverPath string, key []byte) error {
 	// Mã hóa hình ảnh đầu vào
-	encryptedData, err := encryptImageToBytes(inputPath, key)
+	encryptedData, err := EncryptImageToBytes(inputPath, key)
 	if err != nil {
 		return err
 	}
@@ -94,7 +93,7 @@ func encryptImage(inputPath, outputPath string, coverPath string, key []byte) er
 }
 
 // encryptImageToBytes mã hóa hình ảnh và trả về dữ liệu dưới dạng []byte
-func encryptImageToBytes(inputPath string, key []byte) ([]byte, error) {
+func EncryptImageToBytes(inputPath string, key []byte) ([]byte, error) {
 	input, err := os.ReadFile(inputPath)
 	if err != nil {
 		return nil, err
@@ -122,13 +121,4 @@ func encryptImageToBytes(inputPath string, key []byte) ([]byte, error) {
 	}
 
 	return processed, nil
-}
-
-func getRandomCoverPath() string {
-	// get randome file from ./assets/covers
-	covers, err := os.ReadDir("./assets/covers")
-	if err != nil {
-		return ""
-	}
-	return "./assets/covers/" + covers[rand.Intn(len(covers))].Name()
 }

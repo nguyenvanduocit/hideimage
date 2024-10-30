@@ -5,7 +5,9 @@ import (
 	"image"
 	_ "image/png"
 	"log"
+	"math/rand"
 	"os"
+	"server/pkg"
 )
 
 type imageInfo struct {
@@ -39,6 +41,16 @@ func getImageInfo(filepath string) (*imageInfo, error) {
 	}, nil
 }
 
+
+func getRandomCoverPath() string {
+	// get randome file from ./assets/covers
+	covers, err := os.ReadDir("./assets/covers")
+	if err != nil {
+		return ""
+	}
+	return "./assets/covers/" + covers[rand.Intn(len(covers))].Name()
+}
+
 func main() {
 	// Example encryption key
 	key := []byte("MySecretKey123")
@@ -52,7 +64,7 @@ func main() {
 		originalInfo.width, originalInfo.height, originalInfo.size)
 
 	// Example 1: Encrypt an image and hide it in a cover image
-	err = encryptImage(
+	err = pkg.EncryptImage(
 		"./input.png",
 		"./encrypted.png",
 		getRandomCoverPath(),
@@ -73,7 +85,7 @@ func main() {
 	fmt.Println("Successfully encrypted and hidden the image!")
 
 	// Example 2: Decrypt a hidden image
-	err = decryptImage(
+	err = pkg.DecryptImage(
 			"./encrypted.png",
 			"./decrypted.png",
 			key,
